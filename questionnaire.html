@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AID – Q-CHAT-10 Questionnaire</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            max-width: 900px;
+            width: 100%;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            background: #2563eb;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            background: #ddd;
+            height: 8px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .progress-fill {
+            background: #22c55e;
+            height: 8px;
+            border-radius: 10px;
+            width: 0%;
+            transition: 0.3s;
+        }
+
+        .question-box {
+            border: 2px solid #ccc;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option {
+            border: 2px solid #ccc;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #f8fafc;
+        }
+
+        .option:hover {
+            background: #e0efff;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-blue {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-gray {
+            background: #6b7280;
+            color: white;
+        }
+
+        .note {
+            background: #fff8c5;
+            border-left: 5px solid #e7c200;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <h2>Q-CHAT-10 Questionnaire</h2>
+        <button onclick="window.location.href='dashboard.html'" 
+                class="btn btn-blue" style="background:white;color:#2563eb;">
+            Back to Dashboard
+        </button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div style="margin-bottom:10px; font-size:14px;">
+        <span id="progressText">Question 1 of 10</span>
+    </div>
+    <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+    </div>
+
+    <!-- Question Card -->
+    <div id="questionCard" class="question-box"></div>
+
+    <!-- Navigation -->
+    <div class="nav-buttons">
+        <button id="prevBtn" class="btn btn-gray" onclick="prevQuestion()">Previous</button>
+        <button id="nextBtn" class="btn btn-blue" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <!-- Help -->
+    <div class="note">
+        <strong>Note:</strong> Please answer based on your child’s typical behavior over the past few weeks.
+    </div>
+</div>
+
+<script>
+    // Complete 10 Q-CHAT-10 questions
+    const questions = [
+        "1. Does your child look at you when you call his/her name?",
+        "2. How easy is it for you to get eye contact with your child?",
+        "3. When your child is playing alone, does s/he line objects up?",
+        "4. Can other people easily understand your child’s speech?",
+        "5. Does your child point to indicate that s/he wants something (e.g., a toy that is out of reach)?",
+        "6. Does your child point to share interest with you (e.g., pointing at an interesting sight)?",
+        "7. How long can your child’s interest be maintained by a spinning object (e.g., washing machine, fan, toy car wheels)?",
+        "8. How many words can your child say?",
+        "9. Does your child pretend (e.g., care for dolls, talk on a toy phone)?",
+        "10. Does your child follow where you’re looking?"
+    ];
+
+    const optionsList = [
+        ["always","usually","sometimes","rarely","never"],
+        ["very easy","quite easy","quite difficult","very difficult","impossible"],
+        ["always","usually","sometimes","rarely","never"],
+        ["always","usually","sometimes","rarely","my child does not speak"],
+        ["many times a day","a few times a day","a few times a week","less than once a week","never"],
+        ["many times a day","a few times a day","a few times a week","less than once a week","never"],
+        ["several hours","half an hour","ten minutes","a couple of minutes","less than a minute"],
+        ["none—s/he has not started speaking yet","less than 10 words","10–50 words","51–100 words","over 100 words"],
+        ["many times a day","a few times a day","a few times a week","less than once a week","never"],
+        ["many times a day","a few times a day","a few times a week","less than once a week","never"]
+    ];
+
+    let current = 0;
+    let answers = Array(10).fill("");
+
+    function loadQuestion() {
+        document.getElementById("progressText").innerText = `Question ${current+1} of 10`;
+        document.getElementById("progressFill").style.width = `${(current+1)*10}%`;
+
+        let html = `<h3 style="margin-bottom:15px;">${questions[current]}</h3>`;
+        
+        optionsList[current].forEach(opt => {
+            html += `
+                <div class="option">
+                    <label style="display:flex;align-items:center;cursor:pointer;">
+                        <input type="radio" name="q" value="${opt}" 
+                            style="margin-right:12px;" 
+                            ${answers[current] === opt ? "checked" : ""}>
+                        ${opt}
+                    </label>
+                </div>`;
+        });
+
+        document.getElementById("questionCard").innerHTML = html;
+
+        document.getElementById("prevBtn").style.visibility =
+            current === 0 ? "hidden" : "visible";
+
+        document.getElementById("nextBtn").innerText =
+            current === 9 ? "Submit" : "Next";
+    }
+
+    function nextQuestion() {
+        const selected = document.querySelector("input[name='q']:checked");
+        if (!selected) { alert("Please select an answer."); return; }
+
+        answers[current] = selected.value;
+
+        if (current === 9) {
+            localStorage.setItem("qchat_answers", JSON.stringify(answers));
+            window.location.href = "results.html"; // create results page next
+            return;
+        }
+
+        current++;
+        loadQuestion();
+    }
+
+    function prevQuestion() {
+        if (current > 0) current--;
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
