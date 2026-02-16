@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AID - Dashboard</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+
+        /* Header */
+        .header {
+            background: #2563eb;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: white;
+            color: #2563eb;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Welcome Box */
+        .welcome-box {
+            background: #dbeafe;
+            border: 2px solid #bfdbfe;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        /* Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .card-btn {
+            background: #2563eb;
+            color: white;
+            padding: 10px 0px;
+            margin-top: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .green-card {
+            background: #ecfdf5;
+            border: 2px solid #6ee7b7;
+        }
+
+        .blue-card {
+            background: #eff6ff;
+            border: 2px solid #93c5fd;
+        }
+
+        .child-section {
+            border: 2px solid #d1d5db;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .child-card {
+            background: white;
+            border: 1px solid #d1d5db;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .add-child {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .add-child a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .add-child a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+            <h2>AID Dashboard</h2>
+            <div>
+                <span id="welcomeUser" style="margin-right: 15px; font-size: 14px">Welcome, Parent</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- WELCOME SECTION -->
+        <div class="welcome-box">
+            <h3>Welcome to AID System</h3>
+            <p>Manage your child's screening questionnaires and view reports.</p>
+        </div>
+
+        <!-- ACTION CARDS -->
+        <div class="grid">
+            <div class="card green-card">
+                <div style="font-size: 40px;">📝</div>
+                <h3>Start New Questionnaire</h3>
+                <p>Complete Q-CHAT-10 screening for your child.</p>
+                <!-- START BUTTON REDIRECT -->
+                <a href="questionnaire.html">
+                    <div class="card-btn">START</div>
+                </a>
+            </div>
+
+            <div class="card blue-card">
+                <div style="font-size: 40px;">📊</div>
+                <h3>View Reports</h3>
+                <p>Access previous screening reports</p>
+                <div class="card-btn">VIEW</div>
+            </div>
+        </div>
+
+        <!-- CHILD PROFILE SECTION -->
+        <div class="child-section">
+            <h3>Your Children</h3>
+
+            <div class="child-card">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <p><strong>Child Name:</strong> [Name]</p>
+                        <p style="font-size:14px; color:#555;">Age: [Age] | Last Screening: [Date]</p>
+                    </div>
+                    <div style="color:#2563eb; cursor:pointer;">SELECT</div>
+                </div>
+            </div>
+
+            <div class="add-child">
+                <a href="#">+ Add New Child</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- LOGIN CHECK + LOGOUT -->
+    <script>
+        // Redirect if not logged in
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "login.html";
+        }
+
+        // Display user email
+        document.getElementById("welcomeUser").textContent =
+            "Welcome, " + (localStorage.getItem("userEmail") || "Parent");
+
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("userEmail");
+            window.location.href = "login.html";
+        }
+    </script>
+
+</body>
+</html>
