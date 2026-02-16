@@ -1,0 +1,22 @@
+AUTISM PRE-SCREENING ASSESSMENT REPORT
+Generated: 2026-02-13 18:28:20
+
+RESULTS
+Q-CHAT Score: 10/10
+Risk Level: High
+Model Confidence: 100.0%
+
+ASSESSMENT
+AUTISM PRE-SCREENING ASSESSMENT
+
+Q-CHAT Score: 10/10
+Risk Level: High
+
+INTERPRETATION
+Score: 10/10. Risk Level: High.
+
+DISCLAIMER
+This is a screening tool only, not a diagnosis. Professional evaluation by qualified healthcare professionals is required.
+
+DISCLAIMER
+This is a screening tool only, not a diagnosis. Professional evaluation is required.

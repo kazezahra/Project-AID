@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=index.html#language" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    Redirecting to the language view.
+  </body>
+</html>
+
+<script>
+  // ...existing code...
+
+  async function submitQuestionnaire() {
+        showView("completion");
+        try {
+          console.log("=== SUBMISSION START ===");
+          
+          // Validate we have all answers
+          if (responses.length !== 10 || responses.includes(null)) {
+            throw new Error("Not all questions answered");
+          }
+          
+          // Build qchat_answers object
+          const qchatAnswers = {};
+          responses.forEach((answer, index) => {
+            qchatAnswers[String(index + 1)] = answer;
+          });
+          
+          console.log("📝 Metadata:");
+          console.log("  age_mons:", currentMetadata.age_mons);
+          console.log("  sex:", currentMetadata.sex);
+          console.log("  jaundice:", currentMetadata.jaundice);
+          console.log("  family_mem_with_asd:", currentMetadata.family_mem_with_asd);
+          
+          console.log("📋 Q-CHAT Answers:", qchatAnswers);
+
+          const payload = {
+            age_mons: currentMetadata.age_mons,
+            sex: currentMetadata.sex,
+            jaundice: currentMetadata.jaundice,
+            family_mem_with_asd: currentMetadata.family_mem_with_asd,
+            qchat_answers: qchatAnswers
+          };
+
+          console.log("📤 Full Payload:", JSON.stringify(payload, null, 2));
+          console.log("🔗 API URL:", `${API_BASE_URL}/api/predict`);
+
+          const response = await fetch(`${API_BASE_URL}/api/predict`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          console.log("📬 Response Status:", response.status);
+          console.log("📬 Response Headers:", Object.fromEntries(response.headers));
+          
+          const responseData = await response.json();
+          console.log("📋 Response Data:", responseData);
+          
+          if (!response.ok) {
+            console.error("❌ API Error Response:", responseData);
+            throw new Error(responseData.error || `HTTP ${response.status}`);
+          }
+
+          console.log("✅ Prediction Success!");
+          console.log("Result:", responseData);
+          
+          predictionResult = responseData;
+
+          if (currentUser) {
+            await saveResultsToFirebase(responseData);
+          }
+
+          displayResults(responseData);
+          showView("results");
+          
+          console.log("=== SUBMISSION END ===");
+        } catch (error) {
+          console.error("❌ Submission Error:", error.message);
+          console.error("Full Error:", error);
+          
+          const errorDiv = document.getElementById("resultsError");
+          if (errorDiv) {
+            errorDiv.innerHTML = `<div class="error-message">⚠️ Error: ${error.message}</div>`;
+          }
+          showView("results");
+        }
+      }
+
+      function displayResults(result) {
+        console.log("🎯 Displaying Results:", result);
+        
+        const resultsContent = document.getElementById("resultsContent");
+        if (!resultsContent) {
+          console.error("❌ resultsContent element not found!");
+          return;
+        }
+        
+        resultsContent.innerHTML = "";
+
+        const riskLevel = result.qchat_risk_level || "Unknown";
+        const riskClass = riskLevel === "Low" ? "risk-low" : riskLevel === "Medium" ? "risk-medium" : "risk-high";
+        const qchatScore = result.qchat_score || 0;
+        const probability = result.model_probability_asd || 0;
+        const interpretation = result.qchat_referral_interpretation || "No interpretation available";
+        const disclaimer = result.disclaimer || "This is a screening tool, not a diagnosis.";
+
+        console.log("Risk Level:", riskLevel);
+        console.log("Q-CHAT Score:", qchatScore);
+        console.log("Probability:", probability);
+
+        let html = `
+          <div class="result-card ${riskClass}">
+            <div class="result-label">Q-CHAT Score</div>
+            <div class="result-value">${qchatScore} / 10</div>
+          </div>
+          <div class="result-card ${riskClass}">
+            <div class="result-label">Risk Level</div>
+            <div class="result-value">${riskLevel}</div>
+          </div>
+          <div class="result-card">
+            <div class="result-label">Model Confidence</div>
+            <div class="result-value">${(probability * 100).toFixed(1)}%</div>
+          </div>
+          <div class="result-card">
+            <div class="result-label">Recommendation</div>
+            <div class="result-value">${interpretation}</div>
+          </div>
+          <div class="disclaimer">
+            <strong>⚠️ Important:</strong> ${disclaimer}
+          </div>
+        `;
+        
+        resultsContent.innerHTML = html;
+        console.log("✅ Results displayed successfully");
+      }
+
+      async function downloadPDF() {
+        console.log("📥 Starting PDF download...");
+        
+        if (!predictionResult) {
+          console.error("❌ No prediction result available");
+          alert("No prediction result to download");
+          return;
+        }
+        
+        const btn = document.getElementById("downloadPdfBtn");
+        if (!btn) {
+          console.error("❌ Download button not found");
+          return;
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+
+        try {
+          // Get report text if available
+          let reportText = "Assessment Report";
+          if (predictionResult.qchat_referral_interpretation) {
+            reportText = predictionResult.qchat_referral_interpretation;
+          }
+
+          const response = await fetch(`${API_BASE_URL}/api/generate-pdf`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prediction_result: predictionResult,
+              report_text: reportText
+            })
+          });
+
+          console.log("📬 PDF Response Status:", response.status);
+
+          if (!response.ok) {
+            throw new Error("Failed to generate PDF");
+          }
+
+          const blob = await response.blob();
+          console.log("📦 PDF Blob Size:", blob.size, "bytes");
+          
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `autism-screening-${Date.now()}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          
+          console.log("✅ PDF downloaded successfully");
+        } catch (error) {
+          console.error("❌ PDF Download Error:", error);
+          alert("Failed to download PDF: " + error.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = "📥 Download PDF";
+        }
+      }
+
+      // ...existing code...
+</script>
