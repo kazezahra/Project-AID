@@ -47,7 +47,7 @@ def api_predict():
             return jsonify({"error": "No JSON data provided"}), 400
         
         # Validate required fields
-        required = ["age_mons", "sex", "jaundice", "family_mem_with_asd", "qchat_answers"]
+        required = ["age_mons", "gender", "jaundice", "family_mem_with_asd", "qchat_answers"]
         missing = [f for f in required if f not in data]
         if missing:
             return jsonify({"error": f"Missing fields: {missing}"}), 400

@@ -228,9 +228,12 @@ Contributions are welcome! Please:
 
 This project is part of a Final Year Project. See LICENSE for details.
 
-## 👨‍💼 Author
+## � Authors
 
-**Kaze Zahra**  
+**Kaneez e Zahra** - Project Lead & Development  
+**Umer Khalid** - Backend & API Development  
+**Wardah Haya** - Frontend & UI/UX  
+
 Final Year Project - Data Science & AI
 
 ## 📧 Support

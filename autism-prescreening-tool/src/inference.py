@@ -58,8 +58,8 @@ class AutismPredictor:
         
         age_mons = int(data.get("age_mons", 24))
         
-        # Handle sex - can be integer (1/0), string ("male"/"female"), or boolean
-        sex_val = data.get("sex", 0)
+        # Handle gender - can be integer (1/0), string ("male"/"female"), or boolean
+        sex_val = data.get("gender", 0)
         if isinstance(sex_val, str):
             sex = 1 if sex_val.lower() in ["male", "m", "1", "yes"] else 0
         else:
