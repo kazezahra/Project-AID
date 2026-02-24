@@ -2,206 +2,761 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=index.html#language" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Redirecting…</title>
+    <title>AID – Autism Intelligence Detection</title>
+    <link rel="stylesheet" href="newstyles.css" />
+    <style>
+      .view { display: none; }
+      .view.active { display: block; }
+
+      /* HOME */
+      .home-container { text-align: center; width: 100%; }
+      .welcome-title  { font-size: 28px; font-weight: 700; margin-bottom: 12px; color: #111; }
+      .welcome-subtitle { font-size: 16px; color: #555; margin-bottom: 24px; line-height: 1.6; }
+      .logo-area { font-size: 48px; margin-bottom: 16px; }
+      .features { display: grid; gap: 12px; margin-bottom: 28px; }
+      .feature-item {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 15px; text-align: left; padding: 12px 14px;
+        background: rgba(255,255,255,0.55); border-radius: 10px;
+        font-weight: 500; color: #222;
+      }
+      .feature-icon { font-size: 18px; color: #4a9a9a; font-weight: 800; }
+      .cta-buttons { display: grid; gap: 12px; }
+      .btn-primary-home {
+        padding: 14px 20px; border-radius: 12px; border: 1px solid #2f2f2f;
+        background: #6fb0b7; font-weight: 600; font-size: 15px;
+        cursor: pointer; color: white; transition: all 0.3s ease; font-family: inherit;
+      }
+      .btn-primary-home:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(111,176,183,0.3); }
+      .btn-secondary-home {
+        padding: 14px 20px; border-radius: 12px; border: 2px solid #6fb0b7;
+        background: transparent; font-weight: 600; font-size: 15px;
+        cursor: pointer; color: #111; transition: all 0.3s ease; font-family: inherit;
+      }
+      .btn-secondary-home:hover { background: #f0fafb; transform: translateY(-2px); }
+
+      /* LANGUAGE */
+      .language-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+      .language-btn {
+        padding: 10px 12px; border-radius: 12px; border: 1px solid #2f2f2f;
+        font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+        display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: inherit;
+      }
+      .language-btn.english { background: #6fb0b7; color: white; }
+      .language-btn.english:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(111,176,183,0.3); }
+      .language-btn.urdu { background: #f6bdb9; color: #111; }
+      .language-btn.urdu:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(246,189,185,0.3); }
+      .language-flag { font-size: 32px; }
+      .back-link { margin-top: 14px; display: inline-flex; justify-content: center; width: 100%; }
+
+      /* METADATA */
+      .meta-container { width: 100%; }
+      .step-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #111; text-align: center; }
+      .step-subtitle { font-size: 13px; color: #666; text-align: center; margin-bottom: 24px; line-height: 1.5; }
+      .form-group { margin-bottom: 18px; }
+      .form-group label { display: block; font-size: 13px; font-weight: 700; color: #444; margin-bottom: 7px; text-align: center; }
+      .form-control {
+        width: 100%; padding: 12px 16px; background: #fff;
+        border: 1.5px solid #cde4e4; border-radius: 12px;
+        font-size: 14px; font-family: inherit; color: #111;
+        transition: border-color 0.2s, box-shadow 0.2s; appearance: none; -webkit-appearance: none;
+      }
+      select.form-control {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236fb0b7' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+      }
+      .form-control:focus { outline: none; border-color: #6fb0b7; box-shadow: 0 0 0 3px rgba(111,176,183,0.18); }
+
+      /* QUESTIONNAIRE */
+      .questionnaire-container { width: 100%; }
+      .section-badge {
+        display: inline-block; padding: 3px 11px; border-radius: 20px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.4px;
+        text-transform: uppercase; margin-bottom: 12px;
+      }
+      .badge-qchat { background: #d6f0f0; color: #2a7a7a; }
+      .badge-mchat { background: #f0d6f0; color: #7a2a7a; }
+      .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+      .question-number { font-size: 13px; color: #666; font-weight: 600; }
+      .progress-bar { height: 6px; background: #d8eaea; border-radius: 3px; overflow: hidden; margin-bottom: 20px; }
+      .progress-fill { height: 100%; background: #6fb0b7; transition: width 0.35s ease; }
+      .question-text { font-size: 18px; font-weight: 600; margin-bottom: 20px; text-align: left; color: #111; line-height: 1.5; }
+
+      /* 5-option rows */
+      .options-container { display: grid; gap: 10px; margin-bottom: 20px; }
+      .option-btn {
+        padding: 14px 16px; border-radius: 10px; border: 2px solid #e0e0e0;
+        background: white; font-size: 15px; text-align: left; cursor: pointer;
+        transition: all 0.2s ease; font-family: inherit; color: #111;
+        display: flex; align-items: center; gap: 12px;
+      }
+      .option-btn:hover { border-color: #6fb0b7; background: #f0fafb; }
+      .option-btn.selected { background: #6fb0b7; color: white; border-color: #6fb0b7; }
+      .radio-circle {
+        width: 18px; height: 18px; border-radius: 50%; border: 2px solid #bcd;
+        flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+      }
+      .option-btn.selected .radio-circle { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.25); }
+      .option-btn.selected .radio-circle::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: white; }
+
+      /* Yes/No */
+      .yesno-container { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+      .yn-btn {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 10px; padding: 24px 16px; border-radius: 14px; border: 2px solid #e0e0e0;
+        background: white; font-size: 16px; font-weight: 700; cursor: pointer;
+        transition: all 0.2s ease; font-family: inherit; color: #111;
+      }
+      .yn-btn:hover { border-color: #6fb0b7; background: #f0fafb; transform: translateY(-2px); }
+      .yn-btn .yn-icon { font-size: 28px; line-height: 1; }
+      .yn-btn.sel-yes { background: #d6f0e6; border-color: #3a9a6a; color: #1a5a3a; }
+      .yn-btn.sel-no  { background: #f0d6d6; border-color: #c05050; color: #6a1a1a; }
+
+      /* Nav */
+      .navigation { display: flex; gap: 12px; justify-content: space-between; margin-top: 8px; }
+      .btn-nav {
+        flex: 1; height: 44px; border-radius: 10px; border: 1px solid #2f2f2f;
+        background: #6fb0b7; font-weight: 600; cursor: pointer;
+        transition: all 0.3s ease; color: white; font-size: 14px; font-family: inherit;
+      }
+      .btn-nav:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(111,176,183,0.3); }
+      .btn-nav:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+      .btn-nav.btn-back   { background: #9bbcbc; border-color: #9bbcbc; }
+      .btn-nav.btn-submit { background: #3a8a6a; border-color: #2a6a5a; }
+      .btn-nav.btn-submit:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(58,138,106,0.35); }
+
+      /* Completion */
+      .completion-screen { text-align: center; }
+      .completion-icon   { font-size: 60px; margin-bottom: 16px; }
+      .completion-title  { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+      .completion-message { font-size: 16px; color: #666; margin-bottom: 24px; }
+
+      /* Results */
+      .results-grid { display: grid; gap: 12px; margin-bottom: 20px; }
+      .result-card {
+        background: rgba(255,255,255,0.6); border-radius: 12px;
+        padding: 16px; border-left: 4px solid #6fb0b7;
+      }
+      .result-card.risk-low    { border-left-color: #3a9a6a; }
+      .result-card.risk-medium { border-left-color: #d97706; }
+      .result-card.risk-high   { border-left-color: #dc2626; }
+      .result-label { font-size: 12px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+      .result-value { font-size: 18px; font-weight: 700; color: #111; }
+      .disclaimer {
+        background: #fff8e1; border-left: 4px solid #f59e0b;
+        border-radius: 8px; padding: 14px; font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 16px;
+      }
+      .error-message { background: #fee2e2; border-radius: 8px; padding: 12px; color: #991b1b; font-size: 13px; margin-bottom: 12px; }
+      .results-actions { display: grid; gap: 10px; }
+      .btn-home {
+        width: 100%; height: 44px; border-radius: 12px; border: 1px solid #2f2f2f;
+        background: #6fb0b7; font-weight: 600; font-size: 15px;
+        cursor: pointer; color: white; transition: all 0.3s ease; font-family: inherit;
+      }
+      .btn-home:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(111,176,183,0.3); }
+
+      /* Loading spinner */
+      .loading-spinner {
+        display: inline-block; width: 14px; height: 14px;
+        border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+        border-radius: 50%; animation: spin 0.7s linear infinite;
+        vertical-align: middle; margin-right: 6px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* Toast */
+      .toast {
+        position: fixed; bottom: 28px; left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: #1e293b; color: white; padding: 11px 22px;
+        border-radius: 40px; font-size: 13px; font-weight: 600;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 999;
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space: nowrap;
+      }
+      .toast.show { transform: translateX(-50%) translateY(0); }
+
+      @media (max-width: 500px) {
+        .welcome-title { font-size: 24px; }
+        .language-container { grid-template-columns: 1fr; }
+        .question-text { font-size: 16px; }
+        .option-btn { font-size: 14px; }
+      }
+    </style>
   </head>
+
   <body>
-    Redirecting to the language view.
-  </body>
-</html>
+    <main class="page">
+      <img class="line-art left"  src="leftbrain.png"  alt="" aria-hidden="true" />
+      <img class="line-art right" src="rightbrain.png" alt="" aria-hidden="true" />
 
-<script>
-  // ...existing code...
+      <section class="card">
 
-  async function submitQuestionnaire() {
+        <!-- HOME -->
+        <div class="view active" id="view-home">
+          <div class="home-container">
+            <div class="logo-area">🧠</div>
+            <h1 class="welcome-title">Welcome to AID</h1>
+            <p class="welcome-subtitle">Your prescreening tool for early autism detection</p>
+            <div class="features">
+              <div class="feature-item"><span class="feature-icon">✓</span><span>Evidence-based Q-CHAT-10 &amp; M-CHAT-R assessment</span></div>
+              <div class="feature-item"><span class="feature-icon">✓</span><span>Instant screening results</span></div>
+              <div class="feature-item"><span class="feature-icon">✓</span><span>Detailed risk reports</span></div>
+            </div>
+            <div class="cta-buttons">
+              <button class="btn-primary-home"   onclick="showView('language')">Get Started</button>
+              <button class="btn-secondary-home" onclick="showView('login')">Already a Member? Sign In</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- LANGUAGE -->
+        <div class="view" id="view-language">
+          <h1>Choose Language</h1>
+          <p style="margin:0 0 24px;font-size:14px;color:#555;">Select your preferred language to continue</p>
+          <div class="language-container">
+            <button class="language-btn english" onclick="selectLanguage('en')">
+              <span class="language-flag">🇬🇧</span><span>English</span>
+            </button>
+            <button class="language-btn urdu" onclick="selectLanguage('ur')">
+              <span class="language-flag">🇵🇰</span><span>اردو</span>
+            </button>
+          </div>
+          <div class="back-link">
+            <button class="btn-secondary-home" onclick="showView('home')">Back</button>
+          </div>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="view" id="view-login">
+          <h1>Login</h1>
+          <p style="margin:6px 0 18px;font-size:14px;color:#555;">Use Google to log in or create your account.</p>
+          <div class="cta-buttons" style="margin-top:6px;">
+            <button class="btn-primary-home"   id="googleLoginBtn"  type="button">Log In with Google</button>
+            <button class="btn-secondary-home" id="googleSignupBtn" type="button">Sign Up with Google</button>
+          </div>
+          <div class="back-link">
+            <button class="btn-secondary-home" onclick="showView('home')">Back</button>
+          </div>
+        </div>
+
+        <!-- STEP 1 — CHILD INFO -->
+        <div class="view" id="view-metadata">
+          <div class="meta-container">
+            <h2 class="step-title">Step 1: Child Information</h2>
+            <p class="step-subtitle">Please provide some basic information about your child</p>
+            <div class="form-group">
+              <label>Age (in months)</label>
+              <input class="form-control" type="number" id="meta-age" min="12" max="60" placeholder="e.g. 24" />
+            </div>
+            <div class="form-group">
+              <label>Gender</label>
+              <select class="form-control" id="meta-gender">
+                <option value="">-- Select --</option>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>History of Jaundice?</label>
+              <select class="form-control" id="meta-jaundice">
+                <option value="">-- Select --</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Family member with ASD?</label>
+              <select class="form-control" id="meta-family">
+                <option value="">-- Select --</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Ethnicity (optional)</label>
+              <select class="form-control" id="meta-ethnicity">
+                <option value="Others">Prefer not to say</option>
+                <option value="White European">White European</option>
+                <option value="Middle Eastern">Middle Eastern</option>
+                <option value="South Asian">South Asian</option>
+                <option value="Asian">Asian</option>
+                <option value="Black">Black</option>
+                <option value="Hispanic">Hispanic</option>
+                <option value="Native Indian">Native Indian</option>
+                <option value="Mixed">Mixed</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+            <div class="navigation">
+              <button class="btn-nav btn-back" onclick="showView('language')">← Back</button>
+              <button class="btn-nav" onclick="proceedToQuestionnaire()">Proceed →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTIONNAIRE -->
+        <div class="view" id="view-questionnaire">
+          <div class="questionnaire-container">
+            <div id="sectionBadge" class="section-badge badge-qchat">Q-CHAT-10 — Section 1 of 2</div>
+            <div class="question-header">
+              <span class="question-number" id="questionNumber">Question 1 of 24</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill" style="width:4.17%"></div>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div id="answersArea"></div>
+            <div class="navigation">
+              <button class="btn-nav btn-back" id="prevBtn" onclick="previousQuestion()" disabled>← Previous</button>
+              <button class="btn-nav" id="nextBtn" onclick="nextQuestion()">Next →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COMPLETION -->
+        <div class="view" id="view-completion">
+          <div class="completion-screen">
+            <div class="completion-icon">⏳</div>
+            <div class="completion-title">Analysing Responses…</div>
+            <div class="completion-message">Please wait while we process your answers.</div>
+          </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="view" id="view-results">
+          <h2 class="step-title" style="margin-bottom:6px;">Screening Results</h2>
+          <p class="step-subtitle">Based on your child's responses</p>
+          <div id="resultsError"></div>
+          <div class="results-grid" id="resultsContent"></div>
+          <div class="results-actions">
+            <button class="btn-home" id="downloadPdfBtn" onclick="downloadPDF()">📥 Download PDF Report</button>
+            <button class="btn-secondary-home" onclick="restartScreening()">Start New Screening</button>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const API_BASE_URL = "http://localhost:5000";
+      const ALL_VIEWS = ["home","language","login","metadata","questionnaire","completion","results"];
+
+      function showView(name, updateHash=true) {
+        ALL_VIEWS.forEach(v => {
+          const el = document.getElementById("view-"+v);
+          if (el) el.classList.toggle("active", v===name);
+        });
+        if (name==="questionnaire") renderQuestion();
+        if (updateHash) {
+          try {
+            const h="#"+name;
+            if (window.location.hash!==h) history.replaceState(null,"",h);
+          } catch(e) { /* blocked in iframes — safe to ignore */ }
+        }
+      }
+
+      function selectLanguage(lang) {
+        localStorage.setItem("selectedLanguage", lang);
+        showView("metadata");
+      }
+
+      let currentMetadata  = {};
+      let currentUser      = null;
+      let predictionResult = null;
+
+      function proceedToQuestionnaire() {
+        const age      = document.getElementById("meta-age").value.trim();
+        const gender   = document.getElementById("meta-gender").value;
+        const jaundice = document.getElementById("meta-jaundice").value;
+        const family   = document.getElementById("meta-family").value;
+        if (!age||!gender||!jaundice||!family) { showToast("Please fill in all required fields."); return; }
+        const ageNum = parseInt(age);
+        if (isNaN(ageNum)||ageNum<12||ageNum>60) { showToast("Age must be between 12 and 60 months."); return; }
+        currentMetadata = {
+          age_mons: ageNum, gender: parseInt(gender),
+          jaundice: parseInt(jaundice), family_mem_with_asd: parseInt(family),
+          ethnicity: document.getElementById("meta-ethnicity").value||"Others"
+        };
+        currentQuestion = 0;
+        responses = new Array(ALL_QUESTIONS.length).fill(null);
+        showView("questionnaire");
+      }
+
+      /* ── QUESTIONS ─────────────────────────────────────── */
+      const QCHAT = [
+        {id:"a1",  text:"Does your child look at you when you call his/her name?",
+         type:"freq5", opts:["Always","Usually","Sometimes","Rarely","Never"], atRisk:[3,4]},
+        {id:"a2",  text:"How easy is it for you to get eye contact with your child?",
+         type:"scale5", opts:["Very easy","Quite easy","Quite difficult","Very difficult","Impossible"], atRisk:[3,4]},
+        {id:"a3",  text:"Does your child point to indicate that s/he wants something? (e.g., a toy out of reach)",
+         type:"freq5", opts:["Many times a day","A few times a day","A few times a week","Less than once a week","Never"], atRisk:[3,4]},
+        {id:"a4",  text:"Does your child point to share interest with you? (e.g., pointing at an interesting sight)",
+         type:"freq5", opts:["Many times a day","A few times a day","A few times a week","Less than once a week","Never"], atRisk:[3,4]},
+        {id:"a5",  text:"Does your child pretend? (e.g., care for dolls, talk on a toy phone)",
+         type:"freq5", opts:["Many times a day","A few times a day","A few times a week","Less than once a week","Never"], atRisk:[3,4]},
+        {id:"a6",  text:"Does your child follow where you're looking?",
+         type:"freq5", opts:["Many times a day","A few times a day","A few times a week","Less than once a week","Never"], atRisk:[3,4]},
+        {id:"a7",  text:"Does your child comfort upset family members? (e.g., tries to hug a crying sibling)",
+         type:"freq5", opts:["Always","Usually","Sometimes","Rarely","Never"], atRisk:[3,4]},
+        {id:"a8",  text:"Would you describe your child's first words as typical?",
+         type:"scale5", opts:["Very typical","Quite typical","Slightly unusual","Very unusual","Has not started speaking"], atRisk:[3,4]},
+        {id:"a9",  text:"Does your child use simple gestures? (e.g., wave goodbye, clap)",
+         type:"freq5", opts:["Many times a day","A few times a day","A few times a week","Less than once a week","Never"], atRisk:[3,4]},
+        {id:"a10", text:"Does your child stare at nothing with no apparent purpose?",
+         type:"freq5", opts:["Many times a day","A few times a day","A few times a week","Less than once a week","Never"], atRisk:[0,1]}
+      ];
+
+      const MCHAT = [
+        {id:"a11", text:"If you point at something across the room, does your child look at it?",             type:"yesno", atRisk:["no"]},
+        {id:"a12", text:"Have you ever wondered if your child might be deaf?",                                type:"yesno", atRisk:["yes"]},
+        {id:"a13", text:"Does your child like climbing on things? (e.g., furniture, playground equipment)",  type:"yesno", atRisk:["no"]},
+        {id:"a14", text:"Does your child make unusual finger movements near his/her eyes?",                   type:"yesno", atRisk:["yes"]},
+        {id:"a15", text:"Is your child interested in other children?",                                        type:"yesno", atRisk:["no"]},
+        {id:"a16", text:"Does your child show you things by bringing them to you or holding them up?",        type:"yesno", atRisk:["no"]},
+        {id:"a17", text:"When you smile at your child, does he/she smile back at you?",                       type:"yesno", atRisk:["no"]},
+        {id:"a18", text:"Does your child get upset by everyday noises? (e.g., vacuum cleaner, loud music)",  type:"yesno", atRisk:["yes"]},
+        {id:"a19", text:"Does your child walk?",                                                              type:"yesno", atRisk:["no"]},
+        {id:"a20", text:"Does your child try to copy what you do? (e.g., wave, clap, make a face)",          type:"yesno", atRisk:["no"]},
+        {id:"a21", text:"Does your child try to get you to watch him/her? (e.g., says 'Look!' or tugs sleeve)", type:"yesno", atRisk:["no"]},
+        {id:"a22", text:"Does your child understand when you tell him/her to do something?",                  type:"yesno", atRisk:["no"]},
+        {id:"a23", text:"Does your child look at your face to check your reaction when something is new?",    type:"yesno", atRisk:["no"]},
+        {id:"a24", text:"Does your child like movement activities? (e.g., being bounced on your knee, swings)", type:"yesno", atRisk:["no"]}
+      ];
+
+      const ALL_QUESTIONS = [...QCHAT, ...MCHAT];
+      let currentQuestion = 0;
+      let responses = new Array(ALL_QUESTIONS.length).fill(null);
+
+      /* ── RENDER ─────────────────────────────────────────── */
+      function renderQuestion() {
+        const q   = ALL_QUESTIONS[currentQuestion];
+        const idx = currentQuestion;
+        const total = ALL_QUESTIONS.length;
+
+        const badge = document.getElementById("sectionBadge");
+        if (idx < 10) {
+          badge.className   = "section-badge badge-qchat";
+          badge.textContent = "Q-CHAT-10 — Section 1 of 2";
+        } else {
+          badge.className   = "section-badge badge-mchat";
+          badge.textContent = "M-CHAT-R — Section 2 of 2";
+        }
+
+        document.getElementById("questionNumber").textContent = "Question "+(idx+1)+" of "+total;
+        document.getElementById("questionText").textContent   = q.text;
+        document.getElementById("progressFill").style.width   = (((idx+1)/total)*100)+"%";
+
+        const area = document.getElementById("answersArea");
+        area.innerHTML = "";
+
+        if (q.type==="yesno") {
+          const saved = responses[idx];
+          const wrap  = document.createElement("div");
+          wrap.className = "yesno-container";
+          ["yes","no"].forEach(val => {
+            const btn = document.createElement("button");
+            let cls = "yn-btn";
+            if (saved===val) cls += val==="yes" ? " sel-yes" : " sel-no";
+            btn.className = cls;
+            btn.innerHTML = "<span class='yn-icon'>"+(val==="yes"?"✅":"❌")+"</span><span>"+(val==="yes"?"Yes":"No")+"</span>";
+            btn.onclick = () => { responses[idx]=val; renderQuestion(); };
+            wrap.appendChild(btn);
+          });
+          area.appendChild(wrap);
+        } else {
+          const saved = responses[idx];
+          const wrap  = document.createElement("div");
+          wrap.className = "options-container";
+          q.opts.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn"+(saved===i?" selected":"");
+            btn.innerHTML = "<span class='radio-circle'></span>"+opt;
+            btn.onclick = () => { responses[idx]=i; renderQuestion(); };
+            wrap.appendChild(btn);
+          });
+          area.appendChild(wrap);
+        }
+
+        document.getElementById("prevBtn").disabled = (idx===0);
+        const nextBtn = document.getElementById("nextBtn");
+        const isLast  = (idx===total-1);
+        nextBtn.textContent = isLast ? "Submit" : "Next →";
+        nextBtn.className   = isLast ? "btn-nav btn-submit" : "btn-nav";
+        nextBtn.disabled    = (responses[idx]===null);
+      }
+
+      function nextQuestion() {
+        if (responses[currentQuestion]===null) { showToast("Please select an answer."); return; }
+        if (currentQuestion < ALL_QUESTIONS.length-1) { currentQuestion++; renderQuestion(); }
+        else submitQuestionnaire();
+      }
+      function previousQuestion() {
+        if (currentQuestion>0) { currentQuestion--; renderQuestion(); }
+      }
+
+      /* ── SCORING ─────────────────────────────────────────── */
+      function computeBinaryAnswers() {
+        const binary = {};
+        ALL_QUESTIONS.forEach((q,i) => {
+          const raw = responses[i];
+          binary[q.id] = q.atRisk.includes(raw) ? 1 : 0;
+        });
+        return binary;
+      }
+      function computeQchatLegacy() {
+        const map = {};
+        QCHAT.forEach((q,i) => {
+          const raw = responses[i];
+          map[String(i+1)] = raw!==null ? q.opts[raw] : null;
+        });
+        return map;
+      }
+
+      /* ── SUBMIT ─────────────────────────────────── */
+      async function submitQuestionnaire() {
         showView("completion");
         try {
           console.log("=== SUBMISSION START ===");
-          
-          // Validate we have all answers
-          if (responses.length !== 10 || responses.includes(null)) {
-            throw new Error("Not all questions answered");
-          }
-          
-          // Build qchat_answers object
-          const qchatAnswers = {};
-          responses.forEach((answer, index) => {
-            qchatAnswers[String(index + 1)] = answer;
-          });
-          
+
+          const binary = computeBinaryAnswers();
+          const legacy = computeQchatLegacy();
+
           console.log("📝 Metadata:");
           console.log("  age_mons:", currentMetadata.age_mons);
           console.log("  gender:", currentMetadata.gender);
           console.log("  jaundice:", currentMetadata.jaundice);
           console.log("  family_mem_with_asd:", currentMetadata.family_mem_with_asd);
-          
-          console.log("📋 Q-CHAT Answers:", qchatAnswers);
+          console.log("  ethnicity:", currentMetadata.ethnicity);
+          console.log("📋 Q-CHAT Answers (legacy):", legacy);
+          console.log("📋 Screening Answers (binary):", binary);
 
           const payload = {
-            age_mons: currentMetadata.age_mons,
-            gender: currentMetadata.gender,
-            jaundice: currentMetadata.jaundice,
+            age_mons:            currentMetadata.age_mons,
+            gender:              currentMetadata.gender,
+            jaundice:            currentMetadata.jaundice,
             family_mem_with_asd: currentMetadata.family_mem_with_asd,
-            qchat_answers: qchatAnswers
+            ethnicity:           currentMetadata.ethnicity,
+            qchat_answers:       legacy,
+            screening_answers:   binary
           };
 
           console.log("📤 Full Payload:", JSON.stringify(payload, null, 2));
-          console.log("🔗 API URL:", `${API_BASE_URL}/api/predict`);
+          console.log("🔗 API URL:", API_BASE_URL + "/api/predict");
 
-          const response = await fetch(`${API_BASE_URL}/api/predict`, {
+          const response = await fetch(API_BASE_URL + "/api/predict", {
             method: "POST",
-            headers: { 
-              "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
 
           console.log("📬 Response Status:", response.status);
           console.log("📬 Response Headers:", Object.fromEntries(response.headers));
-          
+
           const responseData = await response.json();
           console.log("📋 Response Data:", responseData);
-          
+
           if (!response.ok) {
             console.error("❌ API Error Response:", responseData);
-            throw new Error(responseData.error || `HTTP ${response.status}`);
+            throw new Error(responseData.error || "HTTP " + response.status);
           }
 
           console.log("✅ Prediction Success!");
-          console.log("Result:", responseData);
-          
           predictionResult = responseData;
 
-          if (currentUser) {
-            await saveResultsToFirebase(responseData);
+          if (currentUser && window.saveResultsToFirebase) {
+            await window.saveResultsToFirebase(responseData);
           }
 
           displayResults(responseData);
           showView("results");
-          
           console.log("=== SUBMISSION END ===");
+
         } catch (error) {
           console.error("❌ Submission Error:", error.message);
           console.error("Full Error:", error);
-          
           const errorDiv = document.getElementById("resultsError");
           if (errorDiv) {
-            errorDiv.innerHTML = `<div class="error-message">⚠️ Error: ${error.message}</div>`;
+            errorDiv.innerHTML = "<div class='error-message'>⚠️ Error: " + error.message + "</div>";
           }
+          predictionResult = null;
           showView("results");
         }
       }
 
+      /* ── DISPLAY RESULTS ────────────────────────── */
       function displayResults(result) {
         console.log("🎯 Displaying Results:", result);
-        
-        const resultsContent = document.getElementById("resultsContent");
-        if (!resultsContent) {
-          console.error("❌ resultsContent element not found!");
-          return;
-        }
-        
-        resultsContent.innerHTML = "";
 
-        const riskLevel = result.qchat_risk_level || "Unknown";
-        const riskClass = riskLevel === "Low" ? "risk-low" : riskLevel === "Medium" ? "risk-medium" : "risk-high";
-        const qchatScore = result.qchat_score || 0;
-        const probability = result.model_probability_asd || 0;
+        const el = document.getElementById("resultsContent");
+        if (!el) { console.error("❌ resultsContent element not found!"); return; }
+        el.innerHTML = "";
+
+        const riskLevel      = result.qchat_risk_level || "Unknown";
+        const riskClass      = riskLevel === "Low" ? "risk-low" : riskLevel === "Medium" ? "risk-medium" : "risk-high";
+        const qchatScore     = result.qchat_score !== undefined ? result.qchat_score : "–";
+        const probability    = result.model_probability_asd || 0;
         const interpretation = result.qchat_referral_interpretation || "No interpretation available";
-        const disclaimer = result.disclaimer || "This is a screening tool, not a diagnosis.";
+        const disclaimer     = result.disclaimer || "This is a screening tool, not a diagnosis.";
 
         console.log("Risk Level:", riskLevel);
-        console.log("Q-CHAT Score:", qchatScore);
+        console.log("Screening Score:", qchatScore);
         console.log("Probability:", probability);
 
-        let html = `
-          <div class="result-card ${riskClass}">
-            <div class="result-label">Q-CHAT Score</div>
-            <div class="result-value">${qchatScore} / 10</div>
-          </div>
-          <div class="result-card ${riskClass}">
-            <div class="result-label">Risk Level</div>
-            <div class="result-value">${riskLevel}</div>
-          </div>
-          <div class="result-card">
-            <div class="result-label">Model Confidence</div>
-            <div class="result-value">${(probability * 100).toFixed(1)}%</div>
-          </div>
-          <div class="result-card">
-            <div class="result-label">Recommendation</div>
-            <div class="result-value">${interpretation}</div>
-          </div>
-          <div class="disclaimer">
-            <strong>⚠️ Important:</strong> ${disclaimer}
-          </div>
-        `;
-        
-        resultsContent.innerHTML = html;
+        el.innerHTML =
+          "<div class='result-card " + riskClass + "'><div class='result-label'>Screening Score</div><div class='result-value'>" + qchatScore + " / 24</div></div>" +
+          "<div class='result-card " + riskClass + "'><div class='result-label'>Risk Level</div><div class='result-value'>" + riskLevel + "</div></div>" +
+          "<div class='result-card'><div class='result-label'>Model Confidence</div><div class='result-value'>" + (probability * 100).toFixed(1) + "%</div></div>" +
+          "<div class='result-card'><div class='result-label'>Recommendation</div><div class='result-value' style='font-size:14px;line-height:1.5;'>" + interpretation + "</div></div>" +
+          "<div class='disclaimer'><strong>⚠️ Important:</strong> " + disclaimer + "</div>";
+
         console.log("✅ Results displayed successfully");
       }
 
+      /* ── PDF ────────────────────────────────────── */
       async function downloadPDF() {
         console.log("📥 Starting PDF download...");
-        
+
         if (!predictionResult) {
           console.error("❌ No prediction result available");
-          alert("No prediction result to download");
+          showToast("No prediction result to download");
           return;
         }
-        
+
         const btn = document.getElementById("downloadPdfBtn");
-        if (!btn) {
-          console.error("❌ Download button not found");
-          return;
-        }
-        
+        if (!btn) { console.error("❌ Download button not found"); return; }
+
         btn.disabled = true;
-        btn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+        btn.innerHTML = "<span class='loading-spinner'></span> Generating...";
 
         try {
-          // Get report text if available
           let reportText = "Assessment Report";
           if (predictionResult.qchat_referral_interpretation) {
             reportText = predictionResult.qchat_referral_interpretation;
           }
 
-          const response = await fetch(`${API_BASE_URL}/api/generate-pdf`, {
+          const response = await fetch(API_BASE_URL + "/api/generate-pdf", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              prediction_result: predictionResult,
-              report_text: reportText
-            })
+            body: JSON.stringify({ prediction_result: predictionResult, report_text: reportText })
           });
 
           console.log("📬 PDF Response Status:", response.status);
 
-          if (!response.ok) {
-            throw new Error("Failed to generate PDF");
-          }
+          if (!response.ok) throw new Error("Failed to generate PDF");
 
           const blob = await response.blob();
           console.log("📦 PDF Blob Size:", blob.size, "bytes");
-          
+
           const url = window.URL.createObjectURL(blob);
-          const a = document.createElement("a");
+          const a   = document.createElement("a");
           a.href = url;
-          a.download = `autism-screening-${Date.now()}.pdf`;
+          a.download = "autism-screening-" + Date.now() + ".pdf";
           document.body.appendChild(a);
           a.click();
           window.URL.revokeObjectURL(url);
           document.body.removeChild(a);
-          
+
           console.log("✅ PDF downloaded successfully");
         } catch (error) {
           console.error("❌ PDF Download Error:", error);
-          alert("Failed to download PDF: " + error.message);
+          showToast("Failed to download PDF: " + error.message);
         } finally {
           btn.disabled = false;
-          btn.innerHTML = "📥 Download PDF";
+          btn.innerHTML = "📥 Download PDF Report";
         }
       }
 
-      // ...existing code...
-</script>
+      /* ── RESTART ────────────────────────────────── */
+      function restartScreening() {
+        currentQuestion=0; responses=new Array(ALL_QUESTIONS.length).fill(null);
+        predictionResult=null; currentMetadata={};
+        document.getElementById("resultsContent").innerHTML="";
+        document.getElementById("resultsError").innerHTML="";
+        ["meta-age","meta-gender","meta-jaundice","meta-family"].forEach(id=>{
+          const el=document.getElementById(id); if(el) el.value="";
+        });
+        showView("home");
+      }
+
+      /* ── TOAST ──────────────────────────────────── */
+      let _tt=null;
+      function showToast(msg) {
+        const t=document.getElementById("toast");
+        t.textContent=msg; t.classList.add("show");
+        clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove("show"),3000);
+      }
+
+      /* ── ROUTING ────────────────────────────────── */
+      function getInitialView() {
+        const h=window.location.hash.replace("#","");
+        return ALL_VIEWS.includes(h)?h:"home";
+      }
+      window.addEventListener("hashchange",()=>showView(getInitialView(),false));
+      showView(getInitialView());
+    </script>
+
+    <!-- FIREBASE -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp }
+        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey:"AIzaSyDBA-qdTlkE-GQ-BHhX_Xz-Sq8qN0lIel8",
+        authDomain:"aid-fyp.firebaseapp.com", projectId:"aid-fyp",
+        storageBucket:"aid-fyp.firebasestorage.app",
+        messagingSenderId:"1046614787082",
+        appId:"1:1046614787082:web:c8393a100b0f1769630bf3"
+      };
+
+      const app=initializeApp(firebaseConfig), auth=getAuth(app),
+            db=getFirestore(app), provider=new GoogleAuthProvider();
+      let popupInProgress=false;
+
+      onAuthStateChanged(auth, user=>{ window.currentUser=user||null; });
+
+      async function signInWithGoogle(isSignup) {
+        if (popupInProgress) return;
+        popupInProgress=true;
+        const lb=document.getElementById("googleLoginBtn"), sb=document.getElementById("googleSignupBtn");
+        if(lb) lb.disabled=true; if(sb) sb.disabled=true;
+        try {
+          const result=await signInWithPopup(auth,provider), user=result.user;
+          const userRef=doc(db,"users",user.uid), snap=await getDoc(userRef), exists=snap.exists();
+          if (isSignup) {
+            if (exists) { alert("Account exists. Please log in."); await signOut(auth); return; }
+            await setDoc(userRef,{uid:user.uid,displayName:user.displayName||"",email:user.email||"",photoURL:user.photoURL||"",createdAt:new Date().toISOString()});
+          } else {
+            if (!exists) { alert("No account found. Please sign up."); await signOut(auth); return; }
+            await setDoc(userRef,{uid:user.uid,displayName:user.displayName||"",email:user.email||"",lastLoginAt:new Date().toISOString()},{merge:true});
+          }
+          window.showView("metadata");
+        } catch(err) {
+          if (err.code==="auth/cancelled-popup-request") alert("Popup closed. Try again.");
+          else { console.error(err); alert("Authentication failed. Try again."); }
+        } finally {
+          popupInProgress=false;
+          if(lb) lb.disabled=false; if(sb) sb.disabled=false;
+        }
+      }
+
+      document.getElementById("googleLoginBtn")?.addEventListener("click",()=>signInWithGoogle(false));
+      document.getElementById("googleSignupBtn")?.addEventListener("click",()=>signInWithGoogle(true));
+
+      window.saveResultsToFirebase = async (result) => {
+        try {
+          const user=auth.currentUser; if(!user) return;
+          await addDoc(collection(db,"screeningResults"),{
+            uid:user.uid,email:user.email||"",displayName:user.displayName||"",
+            result, submittedAt:serverTimestamp()
+          });
+        } catch(err) { console.error("Firebase save error:",err); }
+      };
+    </script>
+  </body>
+</html>
